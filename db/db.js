@@ -1,4 +1,4 @@
-const dbUrl = process.env.MONGO_URL;
+const dbUrl = process.env.MONGO_URI;
 const mongoose = require('mongoose')
 
 const connectToDataBase = async () => {
