@@ -5,24 +5,27 @@ const userModel = require("../models/userModel.js");
 
 const signup = async (req, res) => {
     try {
-      const { name, email, password, role, profilePic } = req.body;
+      const { name, email, password, profilePic, role, birthdate, isAdventurous, postcode } = req.body;
       const newUser = {
         name,
         email,
         password: await bcrypt.hash(password, 10),
+        profilePic,
         role,
-        profilePic
+        birthdate,
+        isAdventurous,
+        postcode
       };
       await userModel.create(newUser);
-      res.status(200).send("Usuario creado correctamente");
+      res.status(200).json("Usuario creado correctamente");
     } catch (error) {
       if (error.code === 11000) {
         return res
           .status(500)
-          .send({ status: "Failed", error: "El correo ya existe" });
+          .json({ status: "Failed", error: "El correo ya existe" });
       }
   
-      res.status(500).send({ status: "failed", error: error.message });
+      res.status(500).json({ status: "failed", error: error.message });
     }
   };
   
@@ -32,19 +35,19 @@ const signup = async (req, res) => {
     
         const user = await userModel.findOne({ email: email });
         if (!user) {
-          return res.status(404).send("Usuario o contraseña no validos");
+          return res.status(404).json({ message: "Usuario o contraseña no válidos"});
         }
     
         const validatePassword = await bcrypt.compare(password, user.password);
         if (!validatePassword) {
-          return res.status(404).send("Usuario o contraseña no validos");
+          return res.status(404).json({ message: "Usuario o contraseña no válidos"}); //si pongo .send me devuelve texto plano res.json me devuelve objeto
         }
     
         // npm i jsonwebtoken
         const payload = {
           _id: user._id,
           name: user.name,
-          role: user.role,
+          role: user.role, 
         };
     
         const token = generateToken(payload,false);

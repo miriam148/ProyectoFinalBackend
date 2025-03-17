@@ -4,7 +4,7 @@ const experienceModel = require("../models/experienceModel")
 // Obtener todas las experincias
 exports.getExperience = async (req, res) => {
     try {
-      const experience = await experienceModel.find();
+      const experience = await experienceModel.find().populate("user", "name");
       res.json(experience);
     } catch (error) {
       res.status(500).json({ msg: "Error en el servidor" });
