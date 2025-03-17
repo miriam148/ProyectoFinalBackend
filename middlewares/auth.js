@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken')
 
 const verifyToken = async (req, res, next) => {
     const token = req.header("auth-token");
+    console.log("Token recibido en el backend:", req.header("auth-token"));
+
     if (!token) return res.status(401).send("Acceso denegado");
     try {
       const payload = jwt.verify(token, process.env.ACCESS_SECRET);
