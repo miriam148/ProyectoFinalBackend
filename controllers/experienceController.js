@@ -10,7 +10,7 @@ exports.getExperience = async (req, res) => {
         "user",
         "name"
       ); /*MUY IMPORTANTE USAR POPULATE CUANDO QUEREMOS QUE NOS DEVUELVA EL NOMBRE 
-      EN EL FRONT Y NO EL ID QUE VA RELACIONADO CON ESE USUARIO*/
+      EN EL FRONT. PQ EN BASE DE DATOS ESTA EL ID DE ESE USUARIO Y NO DEVUELVE NADA*/
 
     res.json(experience);
   } catch (error) {
@@ -20,10 +20,17 @@ exports.getExperience = async (req, res) => {
   
   // Crear experiencia (solo usuario autenticado)
   exports.createExperience = async (req, res) => {
-    const { title, description, location, image } = req.body;
+    const { title, description, location } = req.body; //EN ESTE DESTRUCTURING IMAGE YA NO VIENE DE REQ.BODY, AHORA LO OBTENEMOS DE REQ.FILE.PATH
   
     try {
-      const newExperience = new experienceModel({ user: req.payload._id, title, description, location, image });
+      //multer guarda aqui el archivo y esta en req.file.path NO req.body
+      const imagePath = req.file ? req.file.path : "";
+
+      const newExperience = new experienceModel({ user: req.payload._id,
+         title,
+         description,
+         location,
+         image: imagePath}); //AQUI ES DND SE GUARDA LA IMG EN LA BASE DE DATOS
       await newExperience.save();
       res.status(201).json(newExperience);
     } catch (error) {
