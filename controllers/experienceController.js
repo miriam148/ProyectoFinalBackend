@@ -23,8 +23,8 @@ exports.getExperience = async (req, res) => {
     const { title, description, location } = req.body; //EN ESTE DESTRUCTURING IMAGE YA NO VIENE DE REQ.BODY, AHORA LO OBTENEMOS DE REQ.FILE.PATH
   
     try {
-      //multer guarda aqui el archivo y esta en req.file.path NO req.body
-      const imagePath = req.file ? req.file.path : "";
+      //multer guarda aqui el archivo y esta en req.file.path NO req.body( hago replace \\ pq en mongo me sale / y no me coge foto )
+      const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : "";
 
       const newExperience = new experienceModel({ user: req.payload._id,
          title,

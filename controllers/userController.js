@@ -66,5 +66,23 @@ const getAllUsers = async (req,res) => {
     }
 }
 
-module.exports = {  addUser, deleteUser, updateUser, getById, getAllUsers }
+
+
+
+const updateProfilePic = async (req, res) => {
+    try {
+      const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : "";
+      if (!imagePath) return res.status(400).json({ message: "No se subió ninguna imagen" });
+  
+      const userId = req.payload._id;
+  
+      const user = await userModel.findByIdAndUpdate(userId, { profilePic: imagePath }, { new: true });
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Error al actualizar foto de perfil" });
+    }
+  };
+  
+
+module.exports = {  addUser, deleteUser, updateUser, getById, getAllUsers, updateProfilePic }
 
