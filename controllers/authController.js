@@ -1,7 +1,9 @@
 const bcrypt = require("bcryptjs");
-
 const { generateToken } = require("../utils/utils.js")
 const userModel = require("../models/userModel.js");
+
+const jwt = require('jsonwebtoken');/*probando a cambiar refreshtoken sin pasar en la ruta verifytoken pq ya esta caducado
+tengo que hacer funcion nueva de refresh e importar jwt aqui*/
 
 const signup = async (req, res) => {
     try {
@@ -53,28 +55,68 @@ const signup = async (req, res) => {
         const token = generateToken(payload,false);
         const token_refresh = generateToken(payload,true);
     
-        res.status(200).send({user,token, token_refresh});
+        res.status(200).send({user,token, token_refresh}); //en el front en login tambien meto user, token, refresh_token 
       } catch (error) {
         res.status(500).send({ status: "Failed", error: error.message });
       }
     };
     
 
+/*NUEVA FUNCION PROBANDO SI FUNCIONA VERIFYTOKEN */ 
 
-    const refreshToken = (req,res) => {
-      try {
-        const payload = {
-          _id: req.payload._id,
-          name: req.payload.name,
-          role: req.payload.role,
-        }
-        const token = generateToken(payload,false);
-        const token_refresh = generateToken(payload,true);
-        res.status(200).send({token, token_refresh});
-      } catch (error) {
-        res.status(500).send({ status: "Failed", error: error.message });
-      }
+
+const refreshToken = (req, res) => {
+  const { token_refresh } = req.body;  // Recibes el refresh token del front
+  if (!token_refresh) {
+    return res.status(400).json({ error: "No se proporcionó el refresh token" });
+  }
+
+  // Verificas el refresh token usando la REFRESH_SECRET DE.ENV
+  jwt.verify(token_refresh, process.env.REFRESH_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Refresh token inválido o expirado" });
     }
+
+    // El decoded es el payload original (_id, name, role) estos nombres de propiedades SIEMPRE tienen que coincidir 
+    //con las propiedades del payload /CAMBIO PAYLOAD POR DECODED
+    const payload = {
+      _id: decoded._id,
+      name: decoded.name,
+      role: decoded.role,
+    };
+
+    // Genera nuevos tokens
+    const newAccessToken = generateToken(payload, false);
+    const newRefreshToken = generateToken(payload, true);
+
+    /*Devuelves los nuevos tokens, este nombre SI TIENE QUE COINCIDIR CON EL FRONT EN DATA, EN EL STORAGE 
+    LE PUEDES POPNER OTRO NOMBRE PERO EN EL DATA.TOKEN DATA.TOKEN_REFRESH */
+    return res.status(200).json({
+      token: newAccessToken,
+      token_refresh: newRefreshToken,
+    });
+  });
+};
+
+
+
+/* EN ESTA FUNCION EL PAYLOAD YA NO EXISTE, EXISTE SI LE PASO EL MIDDLEWARE DE VERIFY PERO LO HE QUITADO PQ EL
+ACCESS TOKEN YA NO EXISTE POR ESO NO PUEDO PASARLE VERIFY, POR ESO ESTE PAYLOAD ESTA VACIO!!!! O UNDEFINED Y FALLA*/
+
+    // const refreshToken = (req,res) => {
+    //   try {
+    //     const payload = {
+    //       _id: req.payload._id,
+    //       name: req.payload.name,
+    //       role: req.payload.role,
+    //     }
+    //     const token = generateToken(payload,false);
+    //     const token_refresh = generateToken(payload,true);
+    //     res.status(200).send({token, token_refresh});
+    //   } catch (error) {
+    //     res.status(500).send({ status: "Failed", error: error.message });
+    //   }
+    // }
   
   
   
