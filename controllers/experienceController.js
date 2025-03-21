@@ -101,3 +101,31 @@ exports.deleteExperience = async (req, res) => {
       res.status(500).json({ msg: "Error al eliminar la experiencia", error: error.message });
   }
 };
+
+
+
+// Cambiar imagen de experiencia
+exports.changeExperienceImage = async (req, res) => {
+  try {
+    const experienceId = req.params.id;
+    const userId = req.payload._id; // Del token
+
+    const experience = await experienceModel.findById(experienceId);
+    if (!experience) {
+      return res.status(404).json({ msg: "Experiencia no encontrada" });
+    }
+
+    // Solo el creador puede cambiar la imagen
+    if (experience.user.toString() !== userId) {
+      return res.status(403).json({ msg: "No autorizado para cambiar esta imagen" });
+    }
+
+    // Cambiar la imagen con la ruta del archivo subido por multer
+    experience.image = req.file.path;
+    await experience.save();
+
+    res.status(200).json({ msg: "Imagen actualizada con éxito", experience });
+  } catch (error) {
+    res.status(500).json({ msg: "Error al actualizar la imagen", error: error.message });
+  }
+};
