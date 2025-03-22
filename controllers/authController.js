@@ -8,6 +8,14 @@ tengo que hacer funcion nueva de refresh e importar jwt aqui*/
 const signup = async (req, res) => {
     try {
       const { name, email, password, profilePic, role, birthdate, isAdventurous, postcode } = req.body;
+       // Validación de contraseña con regex
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{5,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        status: "Failed",
+        error: "La contraseña debe tener al menos 1 mayúscula, 1 número y mínimo 5 caracteres.",
+      });
+    }
       const newUser = {
         name,
         email,
@@ -100,6 +108,36 @@ const refreshToken = (req, res) => {
 
 
 
+
+const changePassword = async (req, res) => {
+  try {
+    
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.payload._id;
+
+    // Buscar usuario
+    const user = await userModel.findById(userId);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    // Comparar contraseña actual
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ message: "La contraseña actual no es correcta" });
+
+    // Hashear nueva contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Actualizar contraseña
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Contraseña cambiada con éxito" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al cambiar la contraseña" });
+  }
+};
+
+
 /* EN ESTA FUNCION EL PAYLOAD YA NO EXISTE, EXISTE SI LE PASO EL MIDDLEWARE DE VERIFY PERO LO HE QUITADO PQ EL
 ACCESS TOKEN YA NO EXISTE POR ESO NO PUEDO PASARLE VERIFY, POR ESO ESTE PAYLOAD ESTA VACIO!!!! O UNDEFINED Y FALLA*/
 
@@ -119,5 +157,10 @@ ACCESS TOKEN YA NO EXISTE POR ESO NO PUEDO PASARLE VERIFY, POR ESO ESTE PAYLOAD 
     // }
   
   
+
+
+
+
+    
   
-  module.exports = { signup, login, refreshToken};
+  module.exports = { signup, login, refreshToken, changePassword};
