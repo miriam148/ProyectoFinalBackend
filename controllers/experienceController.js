@@ -38,7 +38,7 @@ exports.getExperience = async (req, res) => {
     }
   };
   
-  // Obtener por id
+  // Obtener por id la experiencia (ver detalle)
   exports.getExperienceById = async (req, res) => {
     console.log("Recibí ID:", req.params.id);
     try {
@@ -78,7 +78,7 @@ exports.getExperience = async (req, res) => {
   };
   
 
-//
+//Eliminar la expereincia( solo creador)
 exports.deleteExperience = async (req, res) => {
   try {
       console.log("ID de la experiencia a eliminar:", req.params.id); //Verifica el ID recibido
@@ -104,7 +104,7 @@ exports.deleteExperience = async (req, res) => {
 
 
 
-// Cambiar imagen de experiencia
+// Cambiar imagen de experiencia (solo creador)
 exports.changeExperienceImage = async (req, res) => {
   try {
     const experienceId = req.params.id;

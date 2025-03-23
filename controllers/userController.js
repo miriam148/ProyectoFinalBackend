@@ -1,17 +1,8 @@
 const userModel = require("../models/userModel")
 
-const addUser = async (req, res) => {
-    try {
-        const userData = req.body
-        await userModel.create(userData)
-        res.status(200).send("El usuario se ha creado correctamente")
-         } catch (error) {
-        res.status(500).send({
-            status: 'failed', error: error.message})
-    }
-}
 
 
+//Función para eliminar usuario(solo el usuario se puede eliminar)
 const deleteUser = async (req, res) => {
     try {
         const idUser = req.params.idUser
@@ -26,6 +17,7 @@ const deleteUser = async (req, res) => {
     }
 }
 
+//Función para editar perfil usuario 
 const updateUser = async (req, res) => {
   try {
     const idUser = req.params.idUser;
@@ -42,6 +34,7 @@ const updateUser = async (req, res) => {
   }
 };
 
+
 const getById = async (req, res) => {
     try {
         const idUser = req.payload._id;
@@ -56,19 +49,10 @@ const getById = async (req, res) => {
 
 };
 
-const getAllUsers = async (req,res) => {
-    try {
-        const users = await userModel.find(); // Aquí debería ser la consulta correcta a la base de datos
-        res.json(users);
-    } catch (error) {
-        res.status(500).send({ status: 'failed', error: error.message })
-
-    }
-}
 
 
 
-
+//Función para editar la foto de perfil(solo usuario propietario de la cuenta)
 const updateProfilePic = async (req, res) => {
     try {
       const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : "";
@@ -88,5 +72,5 @@ const updateProfilePic = async (req, res) => {
 
   
 
-module.exports = {  addUser, deleteUser, updateUser, getById, getAllUsers, updateProfilePic }
+module.exports = {   deleteUser, updateUser, getById,  updateProfilePic }
 

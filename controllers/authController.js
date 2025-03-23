@@ -1,10 +1,11 @@
 const bcrypt = require("bcryptjs");
 const { generateToken } = require("../utils/utils.js")
 const userModel = require("../models/userModel.js");
-
 const jwt = require('jsonwebtoken');/*probando a cambiar refreshtoken sin pasar en la ruta verifytoken pq ya esta caducado
 tengo que hacer funcion nueva de refresh e importar jwt aqui*/
 
+
+//Función registrar usuario
 const signup = async (req, res) => {
     try {
       const { name, email, password, profilePic, role, birthdate, isAdventurous, postcode } = req.body;
@@ -38,7 +39,9 @@ const signup = async (req, res) => {
       res.status(500).json({ status: "failed", error: error.message });
     }
   };
-  
+
+
+  //Función loguearte
   const login = async (req, res) => {
       try {
         const { email, password } = req.body;
@@ -108,7 +111,7 @@ const refreshToken = (req, res) => {
 
 
 
-
+//Función para cambiar la contraseña
 const changePassword = async (req, res) => {
   try {
     
@@ -137,7 +140,7 @@ const changePassword = async (req, res) => {
   }
 };
 
-
+//(NO LA QUIERO BORRAR POR SI LA NECESITO, SIGO COMPROBANDO REFRESH TOKEN!)
 /* EN ESTA FUNCION EL PAYLOAD YA NO EXISTE, EXISTE SI LE PASO EL MIDDLEWARE DE VERIFY PERO LO HE QUITADO PQ EL
 ACCESS TOKEN YA NO EXISTE POR ESO NO PUEDO PASARLE VERIFY, POR ESO ESTE PAYLOAD ESTA VACIO!!!! O UNDEFINED Y FALLA*/
 
