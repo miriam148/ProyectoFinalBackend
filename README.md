@@ -51,10 +51,17 @@ Instala las dependencias:
 
  npm install
 
-Crea un archivo .env con este contenido:
+Crea un archivo .env en la raíz del proyecto con este contenido (ajusta los valores según tu configuración local) :
 
-MONGO_URI=mongodb://127.0.0.1:27017/experienciasDB
-SECRET=tu_clave_secreta
+MONGO_URI=mongodb://127.0.0.1:27017/tuNombreDeBaseDeDatos
+ACCESS_SECRET=tu_clave_secreta_a_elección
+REFRESH_SECRET=
+
+ACCESS_SECRET es una clave privada que tú eliges, puede ser cualquier cadena de texto aleatoria, es una clave secreta que se usa para firmar los tokens.
+Para generar tu clave secreta de forma sencilla, abre tu terminal y ejecuta:
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+Copia el resultado y pégalo en tu .env 
+Si quieres generar dos para el refresh token, repite el mismo paso y lo que te devuelva lo copias en REFRESH_SECRET=
 
 Inicia el servidor:
 
@@ -94,4 +101,4 @@ DELETE /api/experience/:id
 
 📖 Autora
 
-Miriam Ibáñez MuñozGitHub: https://github.com/miriam148
+Miriam Ibáñez Muñoz GitHub: https://github.com/miriam148
